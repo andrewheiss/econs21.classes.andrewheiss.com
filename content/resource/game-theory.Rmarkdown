@@ -8,10 +8,26 @@ toc: true
 weight: 2
 ---
 
+```{css, echo=FALSE}
+table {
+  display: table;
+}
+
+.table td {
+  vertical-align: middle;
+  line-height: 1.1;
+}
+```
+
 ```{r load-stuff, include=FALSE}
 library(tidyverse)
-library(magrittr)
-library(gt)
+library(kableExtra)
+library(glue)
+
+game_circle <- emo::ji("o")
+game_dot <- emo::ji("large_blue_circle")
+
+options(knitr.kable.NA = "")
 
 # Make gt's random id tags consistent
 set.seed(1234)
@@ -23,137 +39,53 @@ The easiest way to find Nash equilibria in a 2×2 game is to cover each column a
 
 Here's what that looks like in an invisible hand game. Anil and Bala need to choose what they're going to grow. Their payoffs (measured in utils) for each of their choices are listed in this matrix:
 
-```{r anil-bala-general, echo=FALSE}
-choices <- c("Rice", "Cassava")
-players <- c("Anil", "Bala")
-
-ab_payoffs <- matrix(
-  c("1, 3", "2, 2",
-    "4, 4", "3, 1"),
-  byrow = TRUE, ncol = 2
+```{r anil-bala-general, echo=FALSE, warning=FALSE}
+tribble(
+  ~Player, ~Choice, ~Rice, ~Cassava,
+  "Anil", "Rice", "<span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>3</span>", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>",
+  "Anil", "Cassava",  "<span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>", "<span style='color: #bf616a;'>3</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>"
 ) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-ab_payoffs %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bala")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(50)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bala</span>" = 2), escape = FALSE)
 ```
 
 To start, cover up the column where Bala chooses to grow cassava. If Anil assumes that Bala chooses to grow rice, what's his best option? Anil would get 1 util from growing rice, and 4 from growing cassava. Cassava is best, so put a circle there.
 
 ```{r anil-bala-1, echo=FALSE}
-ab_payoffs_1 <- matrix(
-  c("1, 3", "",
-   paste(emo::ji("o"), "4, 4"), ""),
-  byrow = TRUE, ncol = 2
+tribble(
+  ~Player, ~Choice, ~Rice, ~Cassava,
+  "Anil", "Rice", "<span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>3</span>", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>",
+  "Anil", "Cassava",  glue("{game_circle} <span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"), "<span style='color: #bf616a;'>3</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>"
 ) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-ab_payoffs_1 %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bala")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(50)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bala</span>" = 2), escape = FALSE)
 ```
 
 Next, cover the column where Bala chooses to grow rice. If Anil assumes that Bala chooses to grow cassava, what's his best option? Anil would get 2 utils from growing rice, and 3 from growing cassava. Cassava is the best again, so put a circle there.
 
 ```{r anil-bala-2, echo=FALSE}
-ab_payoffs_2 <- matrix(
-  c("", "2, 2", 
-    emo::ji("o"), paste(emo::ji("o"), "3, 1")),
-  byrow = TRUE, ncol = 2
+tribble(
+  ~Player, ~Choice, ~Rice, ~Cassava,
+  "Anil", "Rice", "<span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>3</span>", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>",
+  "Anil", "Cassava",  glue("{game_circle} <span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"), glue("{game_circle} <span style='color: #bf616a;'>3</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>")
 ) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-ab_payoffs_2 %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bala")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(50)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bala</span>" = 2), escape = FALSE)
 ```
 
 Regardless of what Bala chooses to do, Anil's best choice is always to grow cassava, so he'll do that. That's a pure, dominant strategy.
@@ -161,89 +93,35 @@ Regardless of what Bala chooses to do, Anil's best choice is always to grow cass
 Let's go through the same process for Bala. Cover up the row where Anil chooses to grow cassava. If Bala assumes that Anil chooses to grow rice, what's his best option? Bala would get 3 utils from growing rice, and 2 from growing cassava. Rice is the best option, so put a dot there.
 
 ```{r anil-bala-3, echo=FALSE}
-ab_payoffs_3 <- matrix(
-  c(paste(emo::ji("large_blue_circle"), "1, 3"), "2, 2", 
-    emo::ji("o"), emo::ji("o")),
-  byrow = TRUE, ncol = 2
+tribble(
+  ~Player, ~Choice, ~Rice, ~Cassava,
+  "Anil", "Rice", glue("{game_dot} <span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>3</span>"), "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>",
+  "Anil", "Cassava",  glue("{game_circle} <span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"), glue("{game_circle} <span style='color: #bf616a;'>3</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>")
 ) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-ab_payoffs_3 %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bala")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(50)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bala</span>" = 2), escape = FALSE)
 ```
 
 Next cover up the row where Anil chooses to grow rice If Bala assumes that Anil chooses to grow cassava, what's his best option? Bala would get 4 utils from growing rice, and only 1 from growing cassava. Rice is again his best option, so put a dot there.
 
 ```{r anil-bala-4, echo=FALSE}
-ab_payoffs_4 <- matrix(
-  c(emo::ji("large_blue_circle"), "", 
-    paste(emo::ji("o"), emo::ji("large_blue_circle"), "4, 4"), paste(emo::ji("o"), "3, 1")),
-  byrow = TRUE, ncol = 2
+tribble(
+  ~Player, ~Choice, ~Rice, ~Cassava,
+  "Anil", "Rice", glue("{game_dot} <span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>3</span>"), "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>",
+  "Anil", "Cassava",  glue("{game_circle} {game_dot} <span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"), glue("{game_circle} <span style='color: #bf616a;'>3</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>")
 ) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-ab_payoffs_4 %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bala")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(50)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bala</span>" = 2), escape = FALSE)
 ```
 
 Bala's best option—regardless of what Anil chooses to do—is to grow rice, so that's what he'll do.
@@ -259,45 +137,18 @@ There's a circle and a dot in the (4, 4) / (Cassava, Rice) square, which means t
 situation that both players will naturally settle on without any outside communication, given the structure of the payoffs in the game.
 
 ```{r anil-bala-5, echo=FALSE}
-ab_payoffs_5 <- matrix(
-  c(paste(emo::ji("large_blue_circle"), "1, 3"), "2, 2", 
-    paste(emo::ji("o"), emo::ji("large_blue_circle"), "4, 4"), paste(emo::ji("o"), "3, 1")),
-  byrow = TRUE, ncol = 2
+tribble(
+  ~Player, ~Choice, ~Rice, ~Cassava,
+  "Anil", "Rice", glue("{game_dot} <span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>3</span>"), "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>",
+  "Anil", "Cassava",  glue("{game_circle} {game_dot} <span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"), glue("{game_circle} <span style='color: #bf616a;'>3</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>")
 ) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-ab_payoffs_5 %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bala")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(50)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bala</span>" = 2), escape = FALSE)
 ```
 
 ## Mixed strategies
@@ -318,48 +169,18 @@ There are a bunch of helpful external resources and examples of how to do this, 
 Let's do this with the Bach or Stravinksy game that [we used in session 3](/content/03-content/):
 
 ```{r bos-general, echo=FALSE}
-choices <- c("Chinese", "Italian")
-players <- c("Friend 1", "Friend 2")
-
-bos_payoffs <- matrix(
-  c("2, 1", "0, 0",
-    "0, 0", "1, 2"),
-  byrow = TRUE, ncol = 2
-) %>% 
-  set_rownames(choices) %>% set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-bos_payoffs %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Friend 2")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(70)
-  )
+tribble(
+  ~Player, ~Choice, ~Chinese, ~Italian,
+  "Friend 1", "Chinese", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>", "<span style='color: #bf616a;'>0</span>&ensp;,&ensp;<span style='color: #5e81ac;'>0</span>",
+  "Friend 1", "Italian",  "<span style='color: #bf616a;'>0</span>&ensp;,&ensp;<span style='color: #5e81ac;'>0</span>", "<span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>"
+)  %>% 
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Friend 2</span>" = 2), escape = FALSE)
 ```
 
 ### Step 1: Find the equilibria
@@ -376,47 +197,19 @@ The game has two Nash equilibria, so it has a mixed strategy.
 We calculating the expected utility for each choice by assuming some probability for Friend 1's choices ($p$, $1 - p$) and for Friend 2's choices ($q$, $1 - q$):
 
 ```{r echo=FALSE}
-bos_payoffs_probs <- matrix(
-  c("", "\\(q\\)", "\\(1 - q\\)",
-    '\\(p\\)', "2, 1", "0, 0",
-    "\\(1 - p\\)", "0, 0", "1, 2"),
-  byrow = TRUE, ncol = 3
-) %>% 
-  set_rownames(c("", choices)) %>% set_colnames(c("probs", choices)) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c("", players[1], "")) %>% 
-  select(player, choice, probs, everything())
-
-bos_payoffs_probs %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = "",
-    probs = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Friend 2")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(70)
-  )
+tribble(
+  ~Player, ~Choice, ~prob, ~Chinese, ~Italian,
+  "", "", "", "\\(q\\)", "\\(1 - q\\)",
+  "Friend 1", "Chinese", "\\(p\\)", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>1</span>", "<span style='color: #bf616a;'>0</span>&ensp;,&ensp;<span style='color: #5e81ac;'>0</span>",
+  "Friend 1", "Italian", "\\(1 - p\\)", "<span style='color: #bf616a;'>0</span>&ensp;,&ensp;<span style='color: #5e81ac;'>0</span>", "<span style='color: #bf616a;'>1</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>"
+)  %>% 
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice, `   ` = prob) %>% 
+  kbl(escape = FALSE, align = c("c", "l", "l", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 3, "<span style='color: #5e81ac;'>Friend 2</span>" = 2), escape = FALSE)
 ```
 
 To find the expected utility for a choice, add the utility × probability for each choice in the row (or column, for Player 2). Thus,
@@ -471,47 +264,19 @@ $$
 The expected payoff is the utility × probability for each cell, added together. First, calculate the joint probabilities for each cell by multiplying the row and column probabilities:
 
 ```{r echo=FALSE}
-bos_payoffs_eu <- matrix(
-  c("", "\\(q = \\frac{1}{3}\\)", "\\(1 - q = \\frac{2}{3}\\)",
-    '\\(p = \\frac{2}{3}\\)', "\\(\\frac{2}{3} \\times \\frac{1}{3} = \\frac{2}{9}\\)", "\\(\\frac{2}{3} \\times \\frac{2}{3} = \\frac{4}{9}\\)",
-    "\\(1 - p = \\frac{1}{3}\\)", "\\(\\frac{1}{3} \\times \\frac{1}{3} = \\frac{1}{9}\\)", "\\(\\frac{1}{3} \\times \\frac{2}{3} = \\frac{2}{9}\\)"),
-  byrow = TRUE, ncol = 3
-) %>% 
-  set_rownames(c("", choices)) %>% set_colnames(c("probs", choices)) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c("", players[1], "")) %>% 
-  select(player, choice, probs, everything())
-
-bos_payoffs_eu %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = "",
-    probs = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Friend 2")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(70)
-  )
+tribble(
+  ~Player, ~Choice, ~prob, ~Chinese, ~Italian,
+  "", "", "", "\\(q = \\frac{1}{3}\\)", "\\(1 - q = \\frac{2}{3}\\)",
+  "Friend 1", "Chinese", "\\(p = \\frac{2}{3}\\)", "\\(\\frac{2}{3} \\times \\frac{1}{3} = \\frac{2}{9}\\)", "\\(\\frac{2}{3} \\times \\frac{2}{3} = \\frac{4}{9}\\)",
+  "Friend 1", "Italian", "\\(1 - p = \\frac{1}{3}\\)", "\\(\\frac{1}{3} \\times \\frac{1}{3} = \\frac{1}{9}\\)", "\\(\\frac{1}{3} \\times \\frac{2}{3} = \\frac{2}{9}\\)"
+)  %>% 
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice, `   ` = prob) %>% 
+  kbl(escape = FALSE, align = c("c", "l", "l", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 3, "<span style='color: #5e81ac;'>Friend 2</span>" = 2), escape = FALSE)
 ```
 
 Then multiply each probability by the payoff and add all the cells together:

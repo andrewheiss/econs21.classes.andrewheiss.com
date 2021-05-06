@@ -15,9 +15,20 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{css, echo=FALSE}
+table {
+  display: table;
+}
+
+.table td {
+  vertical-align: middle;
+  line-height: 1.1;
+}
+```
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
-library(gt)
+library(kableExtra)
 source(here::here("lib", "graphics.R"))
 
 # Make gt's random id tags consistent
@@ -35,48 +46,20 @@ set.seed(1234)
 The following game represents the interaction between two software engineers, Astrid and Bettina, who are working together to write code as a part of a project. Astrid is better at writing Java code, while Bettina prefers C++. The numbers represent the pay in dollars for completion of the project. 
 
 ```{r java-cpp-payoffs, echo=FALSE}
-choices <- c("Java", "C++")
-players <- c("Astrid", "Bettina")
-
-java_cpp <- matrix(
-  c("$4,000, $3,000", "$2,000, $2,000",
-    "$0, $0",         "$3,000, $6,000"),
-  byrow = TRUE, ncol = 2
-) %>% 
-  magrittr::set_rownames(choices) %>% magrittr::set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
+java_cpp <- tribble(
+  ~Player, ~Choice, ~Java, ~`C++`,
+  "Astrid", "Java", "<span style='color: #bf616a;'>$4,000</span>&ensp;,&ensp;<span style='color: #5e81ac;'>$3,000</span>", "<span style='color: #bf616a;'>$2,000</span>&ensp;,&ensp;<span style='color: #5e81ac;'>$2,000</span>",
+  "Astrid", "C++",  "<span style='color: #bf616a;'>$0</span>&ensp;,&ensp;<span style='color: #5e81ac;'>$0</span>", "<span style='color: #bf616a;'>$3,000</span>&ensp;,&ensp;<span style='color: #5e81ac;'>$6,000</span>"
+)
 
 java_cpp %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Bettina")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>%
-  tab_options(
-    table.width = pct(100)
-  )
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Bettina</span>" = 2), escape = FALSE)
 ```
 
 &nbsp;
@@ -133,48 +116,20 @@ Consider two nonprofit organizations working in Puerto Rico. Together, they coul
 This situation can be modeled with the following payoff matrix:
 
 ```{r maria-payoffs, echo=FALSE}
-choices <- c("Run shelter", "Distribute paper towels")
-players <- c("Nonprofit 1", "Nonprofit 2")
+maria <- tribble(
+  ~Player, ~Choice, ~`Run shelter`, ~`Distribute paper towels`,
+  "Nonprofit 1", "Run<br>shelter", "<span style='color: #bf616a;'>100</span>&ensp;,&ensp;<span style='color: #5e81ac;'>100</span>", "<span style='color: #bf616a;'>0</span>&ensp;,&ensp;<span style='color: #5e81ac;'>5</span>",
+  "Nonprofit 1", "Distribute<br>paper<br>towels",  "<span style='color: #bf616a;'>5</span>&ensp;,&ensp;<span style='color: #5e81ac;'>0</span>", "<span style='color: #bf616a;'>5</span>&ensp;,&ensp;<span style='color: #5e81ac;'>5</span>"
+)
 
-maria_payoffs <- matrix(
-  c("100, 100", "0, 5",
-    "5, 0", "5, 5"),
-  byrow = TRUE, ncol = 2
-) %>% 
-  magrittr::set_rownames(choices) %>% magrittr::set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-maria_payoffs %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Nonprofit 2")
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(100)
-  )
+maria %>% 
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Nonprofit 2</span>" = 2), escape = FALSE)
 ```
 
 
@@ -212,104 +167,48 @@ Consider **the society you live in,** or **another society** with which you are 
 
 1. Two farmers have unlimited access to a common plot of land and can let their cows graze on it. The matrix below shows the benefits they get from grazing either 1 or 2+ cows on the land.
 
-```{r pd-payoffs, echo=FALSE, indent="    "}
-choices <- c("1 cow", "2+ cows")
-players <- c("Farmer 1", "Farmer 2")
+    1. What category of game is this?
+    2. What is/are the Nash equilibrium/equilibria?
+    3. What is/are the Pareto efficient outcome(s) in this game?
 
-pd_payoffs <- matrix(
-  c("8, 8", "2, 10",
-    "10, 2", "4, 4"),
-  byrow = TRUE, ncol = 2
-) %>% 
-  magrittr::set_rownames(choices) %>% magrittr::set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
+```{r pd-payoffs, echo=FALSE}
+pd <- tribble(
+  ~Player, ~Choice, ~`1 cow`, ~`2+ cows`,
+  "Farmer 1", "1<br>cow", "<span style='color: #bf616a;'>8</span>&ensp;,&ensp;<span style='color: #5e81ac;'>8</span>", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>10</span>",
+  "Farmer 1", "2+<br>cows",  "<span style='color: #bf616a;'>10</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>", "<span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"
+)
 
-pd_payoffs %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Farmer 2")
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(100)
-  )
+pd %>% 
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Farmer 2</span>" = 2), escape = FALSE)
 ```
+
+2. The government offers a reward or subsidy for communities where farmers only allow 1 cow to graze on the common field, resulting in a new payoff matrix.
 
     1. What category of game is this?
     2. What is/are the Nash equilibrium/equilibria?
     3. What is/are the Pareto efficient outcome(s) in this game?
 
-1. The government offers a reward or subsidy for communities where farmers only allow 1 cow to graze on the common field, resulting in this new payoff matrix: 
+```{r stag-payoffs, echo=FALSE}
+stag <- tribble(
+  ~Player, ~Choice, ~`1 cow`, ~`2+ cows`,
+  "Farmer 1", "1<br>cow", "<span style='color: #bf616a;'>15</span>&ensp;,&ensp;<span style='color: #5e81ac;'>15</span>", "<span style='color: #bf616a;'>2</span>&ensp;,&ensp;<span style='color: #5e81ac;'>10</span>",
+  "Farmer 1", "2+<br>cows",  "<span style='color: #bf616a;'>10</span>&ensp;,&ensp;<span style='color: #5e81ac;'>2</span>", "<span style='color: #bf616a;'>4</span>&ensp;,&ensp;<span style='color: #5e81ac;'>4</span>"
+)
 
-```{r stag-payoffs, echo=FALSE, indent="    "}
-choices <- c("1 cow", "2+ cows")
-players <- c("Farmer 1", "Farmer 2")
-
-stag_payoffs <- matrix(
-  c("15, 15", "2, 10",
-    "10, 2", "4, 4"),
-  byrow = TRUE, ncol = 2
-) %>% 
-  magrittr::set_rownames(choices) %>% magrittr::set_colnames(choices) %>% 
-  as_tibble(rownames = "choice") %>% 
-  mutate(player = c(players[1], "")) %>% 
-  select(player, everything())
-
-stag_payoffs %>% 
-  gt() %>%
-  tab_spanner(
-    label = players[[2]],
-    columns = choices
-  ) %>% 
-  cols_label(
-    player = "",
-    choice = ""
-  ) %>% 
-  cols_align(
-    align = "center",
-    columns = vars(choices)
-  ) %>% 
-  tab_style(
-    style = cell_fill(color = "white"),
-    locations = cells_body(rows = TRUE)
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_spanners("Farmer 2")
-  ) %>% 
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = 1)
-  ) %>% 
-  tab_options(
-    table.width = pct(100)
-  )
+stag %>% 
+  mutate(Player = text_spec(Player, format = "html", angle = 270, bold = TRUE, color = "#bf616a")) %>%
+  mutate(Choice = text_spec(Choice, format = "html", bold = TRUE, escape = FALSE)) %>% 
+  rename(` ` = Player, `  ` = Choice) %>% 
+  kbl(escape = FALSE, align = c("c", "c", "c", "c")) %>% 
+  kable_styling(bootstrap_options = "basic", full_width = FALSE, position = "center") %>% 
+  collapse_rows(1) %>% 
+  add_header_above(c(" " = 2, "<span style='color: #5e81ac;'>Farmer 2</span>" = 2), escape = FALSE)
 ```
 
-    1. What category of game is this?
-    2. What is/are the Nash equilibrium/equilibria?
-    3. What is/are the Pareto efficient outcome(s) in this game?
-
-1. How is Pareto efficiency different from fairness? (**≈30 words**)
+3. How is Pareto efficiency different from fairness? (**≈30 words**)
