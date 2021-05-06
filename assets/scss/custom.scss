@@ -27,7 +27,8 @@ h2 {
     margin-top: 2.75rem;
 }
 
-.article-style h2:first-child {
+.article-style h2:first-child,
+.article-style h2:first-of-type {
     margin-top: 0.75rem;
 }
 
