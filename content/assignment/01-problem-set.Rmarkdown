@@ -15,6 +15,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{css, echo=FALSE}
+table {
+  display: table;
+}
+```
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(pander)
@@ -85,11 +91,13 @@ Download this dataset:
 
 - [<i class="fas fa-file-excel"></i> `fred_gdp.xlsx`](/files/fred_gdp.xlsx)
 
-1. Calculate the nominal GDP per capita for the United States.
-1. Calculate the real GDP per capita for the United States in 2012 dollars. You shouldn't use the CPI here. The Fed and other national agencies have a special kind of CPI-like measure for GDP called the "GDP deflator", which is included in the dataset you downloaded. The reference year for this deflator is 2012.
-1. Calculate the real GDP per capita for the United States in 2018 dollars.
+Following [the examples on this page here](/resource/inflation/), do the following with this data: 
+
+1. Create a column that shows the nominal GDP per capita for the United States.
+1. Create a column that shows the real GDP per capita for the United States in 2012 dollars. You shouldn't use the CPI here. The Fed and other national agencies have a special kind of CPI-like measure for GDP called the "GDP deflator", which is included in the dataset you downloaded. The reference year for this deflator is 2012.
+1. Create a column that shows the real GDP per capita for the United States in 2018 dollars.
 1. Create a plot showing three lines over time: nominal GDP per capita, real GDP per capita (2012 dollars), and real GDP per capita (2018 dollars).
-1. Calculate the percent change between each year for one of the real GDP columns. Which year saw the biggest growth rate? Which year saw the smallest growth rate? Plot the annual percent change if you're feeling adventurous.
+1. Create a column that shows the percent change between each year for one of the real GDP columns. Which year saw the biggest growth rate? Which year saw the smallest growth rate? Plot the annual percent change if you're feeling adventurous.
 
 
 ## 6
