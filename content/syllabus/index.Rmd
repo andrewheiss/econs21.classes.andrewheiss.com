@@ -9,10 +9,24 @@ output:
     fig_caption: false
 ---
 
+```{css, echo=FALSE}
+table {
+  display: table;
+}
+
+.table td {
+  vertical-align: middle;
+  line-height: 1.1;
+}
+```
+
 ```{r setup, message=FALSE, warning=FALSE, include=FALSE}
 library(dplyr)
 library(tibble)
-library(pander)
+library(kableExtra)
+
+options(dplyr.summarise.inform = FALSE,
+        knitr.kable.NA = "")
 ```
 
 `r blogdown::shortcode("courseinfo")`
@@ -147,10 +161,10 @@ You can find descriptions for all the assignments on the [assignments page](/ass
 ```{r assignments-grades, include=FALSE}
 assignments <- tribble(
   ~Points,  ~Assignment,
-  10 * 14  , "Weekly reports (10 × 14)",
+  20 * 7  , "Weekly reports (20 × 7)",
   20 * 7  , "Problem sets (20 × 7)",
-  150     , "Exam 1",
-  150     , "Exam 2"
+  125     , "Exam 1",
+  175     , "Exam 2"
 ) %>%
   mutate(Percent = Points / sum(Points),
          Percent = scales::percent(Percent, accuracy = 1))
@@ -166,7 +180,6 @@ grading <- tribble(
 )
 ```
 
-<div class="centered-table">
 
 ```{r show-assignments-table, echo=FALSE, results="asis"}
 assignments_total <- tibble(Assignment = "Total",
@@ -175,19 +188,16 @@ assignments_total <- tibble(Assignment = "Total",
 
 bind_rows(assignments, assignments_total) %>% 
   select(Assignment, Points, Percent) %>% 
-  pandoc.table(justify = "lcc", missing = "—")
+  kbl(align = c("l", "c", "c")) %>% 
+  kable_styling(full_width = FALSE)
 ```
-</div>
-
-<div class="centered-table">
 
 ```{r show-grades-table, echo=FALSE, results="asis"}
 grading %>%
-  pandoc.table(justify = "lclc",
-               col.names = c("Grade", "Range", "Grade", "Range"))
+  kbl(align = c("l", "c", "l", "c"),
+      col.names = c("Grade", "Range", "Grade", "Range")) %>% 
+  kable_styling(full_width = FALSE)
 ```
-
-<div>
 
 
 ## Movies
